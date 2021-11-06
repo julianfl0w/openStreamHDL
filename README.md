@@ -36,7 +36,7 @@ Here you will find some valuable VHDL code blocks for infrastructure. A short br
 | sum8.vhd                  | Sums 8 input channels                                                  |
 | sumtime.vhd               | Sums across time (streaming)                                           |  
   
-#Streaming Paradigm:  
+# Streaming Paradigm:  
 (from https://inst.eecs.berkeley.edu/~cs150/Documents/Interfaces.pdf)  
   
 ![image](https://user-images.githubusercontent.com/8158655/140623267-7ed477c5-1778-45e8-ba8b-48a25d099fc0.png)

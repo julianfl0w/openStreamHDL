@@ -1,8 +1,9 @@
 # openStreamHDL
 
 Here you will find some valuable VHDL code blocks for infrastructure. A short breakdown of files here:
-| LFSR.vhd                  | Psudorandom Number Generation                                          |
+| Filename                  | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
+| LFSR.vhd                  | Psudorandom Number Generation                                          |
 | bezier.vhd                | Solves a Bezier Curve                                                  |
 | bezier_mm.vhd             |                                                                        |
 | bezier_tb.vhd             |                                                                        |

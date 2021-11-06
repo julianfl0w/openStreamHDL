@@ -29,7 +29,7 @@
 --              would create SPI_Clk of 25 MHz.  Must be >= 2
 --
 ------------------------------------------------------------------------------/
-
+-- Julian Loiacono edited this file
 Library ieee;
 Use ieee.std_logic_1164.All;
 Use ieee.numeric_std.All;
@@ -61,21 +61,21 @@ Entity spi_master Is
 		-- SPI Interface
 		SPI_Cs : Out Std_logic := '1';
 		SPI_Clk : Out Std_logic;
-		SPI_Miso : In Std_logic_vector(0 downto 0);
-		SPI_Mosi : Out Std_logic_vector(0 downto 0)
+		SPI_Miso : In Std_logic_vector(0 Downto 0);
+		SPI_Mosi : Out Std_logic_vector(0 Downto 0)
 	);
 End Entity spi_master;
- 
+
 Architecture RTL Of spi_master Is
 
 	Type tb_statetype Is (HIGHPERIOD, IDLE, PREDATA, RISING, FALLING, POSTDATA);
 	Signal spi_state : tb_statetype;
 
-	Signal SPI_MOSI_valid : Std_logic:='0'; -- Data Valid Pulse with TX_data
-	Signal SPI_MOSI_Ready : Std_logic :='0'; -- Transmit Ready for next byte
+	Signal SPI_MOSI_valid : Std_logic := '0'; -- Data Valid Pulse with TX_data
+	Signal SPI_MOSI_Ready : Std_logic := '0'; -- Transmit Ready for next byte
 
-	Signal SPI_MISO_valid : Std_logic:='0'; -- Data Valid Pulse with TX_data
-	Signal SPI_MISO_Ready : Std_logic:='0'; -- Transmit Ready for next byte
+	Signal SPI_MISO_valid : Std_logic := '0'; -- Data Valid Pulse with TX_data
+	Signal SPI_MISO_Ready : Std_logic := '0'; -- Transmit Ready for next byte
 
 	-- SPI Interface (All Runs at SPI Clock Domain)
 	Signal w_CPOL : Std_logic; -- Clock polarity
@@ -103,9 +103,9 @@ Begin
 
 	TX_LengthFifo_ready <= '1' When spi_state = IDLE And rst = '0' Else '0';
 
-    SPI_Cs <= '1' when spi_state = IDLE or spi_state = HIGHPERIOD else '0';
-    
-    -- Purpose: Generate SPI Clock correct number of times when DV pulse comes
+	SPI_Cs <= '1' When spi_state = IDLE Or spi_state = HIGHPERIOD Else '0';
+
+	-- Purpose: Generate SPI Clock correct number of times when DV pulse comes
 	Edge_Indicator : Process (Clk, Rst)
 	Begin
 
@@ -115,48 +115,48 @@ Begin
 			Else
 
 				count <= count + 1;
-				
+
 				-- every time we receive a length, return state to "predata" 
 				If TX_LengthFifo_valid = '1' And TX_LengthFifo_ready = '1' Then
-                    count <= 0;
+					count <= 0;
 					spi_state <= PREDATA;
-					current_bit <= to_integer(unsigned(TX_LengthFifo_data(31 downto 0))) - 1;
-				End If;
-				
-				-- every time we receive a bit, send it to mosi! decrement bit counter
-				If SPI_MOSI_valid = '1' And SPI_MOSI_ready = '1' Then
-                    SPI_MOSI_ready <= '0';
-					If current_bit = 0 Then
-					else
-					   current_bit  <= current_bit - 1;
-                    end if;
+					current_bit <= to_integer(unsigned(TX_LengthFifo_data(31 Downto 0))) - 1;
 				End If;
 
-                if SPI_MISO_ready = '1'  And SPI_MISO_valid = '1' then
-                    SPI_MISO_valid <= '0';
-                end if;
-                        
+				-- every time we receive a bit, send it to mosi! decrement bit counter
+				If SPI_MOSI_valid = '1' And SPI_MOSI_ready = '1' Then
+					SPI_MOSI_ready <= '0';
+					If current_bit = 0 Then
+					Else
+						current_bit <= current_bit - 1;
+					End If;
+				End If;
+
+				If SPI_MISO_ready = '1' And SPI_MISO_valid = '1' Then
+					SPI_MISO_valid <= '0';
+				End If;
+
 				Case(spi_state) Is
 					When HIGHPERIOD =>
-					   If count = 5 Then
-					       spi_state <= IDLE;
-					   end if;
+					If count = 5 Then
+						spi_state <= IDLE;
+					End If;
 					When IDLE =>
-					   -- literally do nothing
-					   count <= 0;
+					-- literally do nothing
+					count <= 0;
 					When PREDATA =>
-                        if count > 5 then 
-						    count <= 0;
-                            spi_state <= RISING;
-                        end if;
+					If count > 5 Then
+						count <= 0;
+						spi_state <= RISING;
+					End If;
 					-- RISING EDGE
 					When RISING =>
 					If count = CLKS_PER_HALF_BIT Then
 						count <= 0;
-                        SPI_MISO_valid <= '1'; -- better be ready
-                        SPI_MOSI_ready <= '1';
+						SPI_MISO_valid <= '1'; -- better be ready
+						SPI_MOSI_ready <= '1';
 						If current_bit = 0 Then
-                            spi_state <= POSTDATA;
+							spi_state <= POSTDATA;
 						Else
 							spi_state <= FALLING;
 						End If;
@@ -179,30 +179,30 @@ Begin
 		End If;
 	End Process Edge_Indicator;
 
-    -- have to do the copy verison here
-    -- bc otherwise vivado gets confused
-    -- when one serialzer is in tb and the other in system
+	-- have to do the copy verison here
+	-- bc otherwise vivado gets confused
+	-- when one serialzer is in tb and the other in system
 	ser : Entity work.serializer_copy
 		Port Map(
 			clk => clk,
 			rst => rst,
-			din_ready  => TX_ready,
-			din_valid  => TX_valid,
-			din_data   => TX_data,
+			din_ready => TX_ready,
+			din_valid => TX_valid,
+			din_data => TX_data,
 			dout_ready => SPI_MOSI_Ready,
 			dout_valid => SPI_MOSI_valid,
-			dout_data  => SPI_MOSI
+			dout_data => SPI_MOSI
 		);
 	deser : Entity work.deserializer_copy
 		Port Map(
 			clk => clk,
 			rst => rst,
-			din_ready  => SPI_MISO_ready,
-			din_valid  => SPI_MISO_valid,
-			din_data   => SPI_MISO,
+			din_ready => SPI_MISO_ready,
+			din_valid => SPI_MISO_valid,
+			din_data => SPI_MISO,
 			dout_ready => RX_Ready,
 			dout_valid => RX_valid,
-			dout_data  => RX_data
+			dout_data => RX_data
 		);
 
 	-- how many bytes to send
@@ -216,6 +216,6 @@ Begin
 			dout_ready => TX_LengthFifo_ready,
 			dout_valid => TX_LengthFifo_valid,
 			dout_data => TX_LengthFifo_data
-		); 
+		);
 
 End Architecture RTL;

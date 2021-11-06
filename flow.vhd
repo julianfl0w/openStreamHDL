@@ -23,8 +23,8 @@ End flow;
 
 Architecture Behavioral Of flow Is
 
-	Signal run_int    : Std_logic_vector(run'Range) := (Others => '0');
-	Signal valid      : Std_logic_vector(run'length - 1 Downto 1) := (Others => '0');
+	Signal run_int : Std_logic_vector(run'Range) := (Others => '0');
+	Signal valid : Std_logic_vector(run'length - 1 Downto 1) := (Others => '0');
 	Signal future_gap : Std_logic_vector(run'Range) := (Others => '0');
 
 Begin
@@ -35,14 +35,9 @@ Begin
 	run_int(0) <= future_gap(0) And in_valid And Not rst;
 	future_gap(0) <= '1' When ((Not unsigned(valid(run'high Downto 1))) /= 0 Or out_ready = '1') Else '0';
 	genloop :
-	For i In 1 To run'high-1 Generate
+	For i In 1 To run'high Generate
 		-- future gap if there is a non-valid ahead, or if output is ready
 		future_gap(i) <= '1' When ((Not unsigned(valid(run'high Downto i + 1))) /= 0 Or out_ready = '1') Else '0';
-	End Generate;
-    future_gap(run'high) <= out_ready;
-
-    genloop2 :
-	For i In 1 To run'high Generate
 		-- run when there is a gap and current step is valid
 		run_int(i) <= future_gap(i) And valid(i) And Not rst;
 	End Generate;

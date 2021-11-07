@@ -1,6 +1,6 @@
 # openStreamHDL
 
-Here you will find some valuable VHDL code blocks for infrastructure. A short breakdown of files here:
+Here you will find some valuable VHDL code blocks for infrastructure. They are designed to be synthesized for FPGA. A short breakdown of files here:
 | Filename                  | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
 | LFSR.vhd                  | Psudorandom Number Generation                                          |

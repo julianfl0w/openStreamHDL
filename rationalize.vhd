@@ -15,7 +15,7 @@ Use UNISIM.vcomponents.All;
 Library UNIMACRO;
 Use UNIMACRO.vcomponents.All;
 Library work;
-Use work.spectral_pkg.All;
+Use work.zconstants_pkg.All;
 
 Entity rationalize Is
 	Generic (

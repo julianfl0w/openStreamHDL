@@ -4,7 +4,7 @@ Use ieee.std_logic_1164.All;
 Use ieee.numeric_std.All;
 Use ieee.math_real.All;
 Library work;
-Use work.spectral_pkg.All;
+Use work.zconstants_pkg.All;
 
 Library IEEE_PROPOSED;
 Use IEEE_PROPOSED.FIXED_PKG.All;

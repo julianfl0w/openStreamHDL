@@ -9,7 +9,7 @@ library IEEE_PROPOSED;
 use IEEE_PROPOSED.FIXED_PKG.ALL;
 
 Library work;
-use work.spectral_pkg.all;
+use work.zconstants_pkg.all;
 
 -- takes startpoint, midpoint, endpoint, and x-value (-1, 1)
 -- exports the quadratic bezier_tb at that point

@@ -19,7 +19,7 @@ Library UNIMACRO;
 Use UNIMACRO.vcomponents.All;
 
 Library work;
-Use work.spectral_pkg.All;
+Use work.zconstants_pkg.All;
 
 Entity i2s_master Is
 	Generic (

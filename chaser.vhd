@@ -3,7 +3,7 @@ Use ieee.std_logic_1164.All;
 Use ieee.numeric_std.All;
 Use ieee.math_real.All;
 Library work;
-Use work.spectral_pkg.All;
+Use work.zconstants_pkg.All;
 Library ieee_proposed;
 Use ieee_proposed.fixed_pkg.All;
 Use ieee_proposed.fixed_float_types.All;

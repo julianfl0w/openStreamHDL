@@ -17,7 +17,7 @@ Library UNIMACRO;
 use UNIMACRO.vcomponents.all;
 
 Library work;
-use work.spectral_pkg.all;
+use work.zconstants_pkg.all;
 
 entity i2s_master_clocked is
     generic(

@@ -15,7 +15,7 @@ Library IEEE_PROPOSED;
 Use IEEE_PROPOSED.FIXED_PKG.All;
 
 Library work;
-Use work.spectral_pkg.All;
+Use work.zconstants_pkg.All;
 
 Entity linear_interp Is
 	Generic (

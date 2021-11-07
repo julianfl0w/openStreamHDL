@@ -18,7 +18,8 @@ Use ieee_proposed.fixed_pkg.All;
 Use ieee_proposed.fixed_float_types.All;
 
 Library work;
-Use work.spectral_pkg.All;
+Use work.zconstants_pkg.All;
+Use work.sine_table_pkg.All;
 
 Entity sine_lookup Is
 	Port (

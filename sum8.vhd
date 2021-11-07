@@ -7,9 +7,6 @@ Use IEEE.STD_LOGIC_1164.All;
 Use IEEE.NUMERIC_STD.All;
 Use ieee.math_real.All;
 
-Library work;
-Use work.zconstants_pkg.All;
-
 Library IEEE_PROPOSED;
 Use IEEE_PROPOSED.FIXED_PKG.All;
 Library UNISIM;
@@ -19,6 +16,7 @@ Library UNIMACRO;
 Use UNIMACRO.vcomponents.All;
 Library work;
 Use work.zconstants_pkg.All;
+Use work.spectral_pkg.All;
 Library ieee_proposed;
 Use ieee_proposed.fixed_pkg.All;
 Use ieee_proposed.fixed_float_types.All;

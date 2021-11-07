@@ -6,7 +6,7 @@ use ieee.math_real.all;
 Library IEEE_PROPOSED;
 Use IEEE_PROPOSED.FIXED_PKG.All;
 
-package sine_table is    
+package sine_table_pkg is    
   
     type a_sine_lut is array(0 to 127) of unsigned(16 downto 0);
     constant the_sine_lut : a_sine_lut :=
@@ -46,4 +46,4 @@ package sine_table is
     --attribute ram_style  : string;
     --attribute ram_style  of the_sine_lut : signal is "distributed";
     
-end sine_table;
+end sine_table_pkg;

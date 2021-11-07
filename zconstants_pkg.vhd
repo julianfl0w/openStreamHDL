@@ -6,7 +6,7 @@ use ieee.math_real.all;
 Library IEEE_PROPOSED;
 Use IEEE_PROPOSED.FIXED_PKG.All;
 
-package ZCONSTANTS is    
+package zconstants_pkg is    
 
     constant ZN12 : integer := -12;
     constant ZN11 : integer := -11;
@@ -257,4 +257,4 @@ package ZCONSTANTS is
     constant S68 : integer := 68;
     constant S69 : integer := 69;
     
-end ZCONSTANTS;
+end zconstants_pkg;

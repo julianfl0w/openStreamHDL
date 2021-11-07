@@ -33,7 +33,7 @@ End sumtime;
 
 Architecture arch_imp Of sumtime Is
 
-	Constant ratiolog2 : Integer := log2(ratio);
+	Constant ratiolog2 : Integer := integer(round(log2(real(ratio))));
 	Signal din_ready_int : Std_logic := '1';
 	Signal dout_valid_int : Std_logic := '0';
 	Signal data_latched : sfixed(dout_data'high Downto dout_data'low) := (Others => '0');

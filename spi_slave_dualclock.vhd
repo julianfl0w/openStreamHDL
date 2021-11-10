@@ -37,8 +37,9 @@ Architecture RTL Of spi_slave_dualclock Is
 	Signal TXFIFO_DATA : Std_logic_vector(TX_DATA'high Downto 0); -- input data for SPI master
 	Signal TXFIFO_VALID : Std_logic; -- when TX_VALID = 1, input data are valid
 	Signal TXFIFO_READY : Std_logic; -- when TX_READY = 1, valid input data are accept
+	Signal TX_Enable_LATCHED : Std_logic;
 
-	Signal TXFIFO_READY_and_enable : Std_logic;
+	Signal MISO_READY_and_enable : Std_logic;
 
 	Signal RXFIFO_DATA : Std_logic_vector(RX_DATA'high Downto 0); -- output data from SPI master
 	Signal RXFIFO_VALID : Std_logic; -- when RX_VALID = 1, output data are valid
@@ -53,8 +54,17 @@ Begin
 	MISO_Ready <= Not CS_N;
 	MISO <= MISO_int When MISO_valid = '1' Else "0";
 	rst_or_deselected <= rst Or CS_N;
-	TXFIFO_READY_and_enable <= TXFIFO_READY And TX_ENABLE; -- THIS SIGNAL CROSSES DOMAINS AND IDGAF
+	MISO_READY_and_enable <= MISO_READY And TX_Enable_LATCHED; -- THIS SIGNAL CROSSES DOMAINS AND IDGAF
 
+    -- LATCH ENABLE ON DESELECT
+	latch_process :
+	Process (CS_N)
+	Begin
+		If rising_edge(CS_N) Then
+			TX_Enable_LATCHED <= TX_Enable;
+		End If;
+	End Process;
+	
 	-- transmit
 	fs_tx : Entity work.fifo_stream_36_dual
 		Generic Map(
@@ -67,7 +77,7 @@ Begin
 			din_ready => TX_ready,
 			din_valid => TX_valid,
 			din_data => TX_data,
-			dout_ready => TXFIFO_ready_and_enable,
+			dout_ready => TXFIFO_ready,
 			dout_valid => TXFIFO_valid,
 			dout_data => TXFIFO_data
 		);
@@ -79,7 +89,7 @@ Begin
 			din_ready => TXFIFO_ready,
 			din_valid => TXFIFO_valid,
 			din_data => TXFIFO_data,
-			dout_ready => MISO_Ready,
+			dout_ready => MISO_READY_and_Enable,
 			dout_valid => MISO_valid,
 			dout_data => MISO_int
 		);

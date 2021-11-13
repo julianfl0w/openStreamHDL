@@ -52,7 +52,6 @@ Begin
 	sclk_not <= Not sclk;
 	MOSI_VALID <= Not CS_N;
 	MISO_Ready <= Not CS_N;
-	MISO <= MISO_int When MISO_valid = '1' Else "0";
 	rst_or_deselected <= rst Or CS_N;
 	MISO_READY_and_enable <= MISO_READY And TX_Enable_LATCHED; -- THIS SIGNAL CROSSES DOMAINS AND IDGAF
 
@@ -62,6 +61,19 @@ Begin
 	Begin
 		If rising_edge(CS_N) Then
 			TX_Enable_LATCHED <= TX_Enable;
+		End If;
+	End Process;
+	
+	miso_process :
+	Process (sclk)
+	Begin
+		If rising_edge(sclk) Then
+	        --MISO <= MISO_int When MISO_valid = '1' Else "0";
+	        if MISO_valid = '1' then
+	           MISO <= MISO_int;
+	        else 
+	           MISO <= "0";
+	        end if;
 		End If;
 	End Process;
 	

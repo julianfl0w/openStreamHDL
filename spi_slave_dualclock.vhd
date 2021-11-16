@@ -55,6 +55,7 @@ Begin
 	rst_or_deselected <= rst Or CS_N;
 	MISO_READY_and_enable <= MISO_READY And TX_Enable_LATCHED; -- THIS SIGNAL CROSSES DOMAINS AND IDGAF
 
+    MISO <= MISO_int;
     -- LATCH ENABLE ON DESELECT
 	latch_process :
 	Process (CS_N)
@@ -67,13 +68,8 @@ Begin
 	miso_process :
 	Process (sclk)
 	Begin
-		If rising_edge(sclk) Then
-	        --MISO <= MISO_int When MISO_valid = '1' Else "0";
-	        if MISO_valid = '1' then
-	           MISO <= MISO_int;
-	        else 
-	           MISO <= "0";
-	        end if;
+		If falling_edge(sclk) Then
+           --MISO <= MISO_int;
 		End If;
 	End Process;
 	
@@ -84,7 +80,7 @@ Begin
 		)
 		Port Map(
 			inclk => clk,
-			outclk => sclk,
+			outclk => sclk_not,
 			rst => rst,
 			din_ready => TX_ready,
 			din_valid => TX_valid,
@@ -96,7 +92,7 @@ Begin
 
 	ser : Entity work.serializer
 		Port Map(
-			clk => sclk,
+			clk => sclk_not,
 			rst => rst,
 			din_ready => TXFIFO_ready,
 			din_valid => TXFIFO_valid,

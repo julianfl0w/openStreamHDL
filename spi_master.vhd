@@ -71,6 +71,7 @@ Architecture RTL Of spi_master Is
 	Type tb_statetype Is (HIGHPERIOD, IDLE, PREDATA, RISING, FALLING, POSTDATA);
 	Signal spi_state : tb_statetype;
 
+	Signal SPI_Miso_latched : Std_logic_vector(0 Downto 0);
 	Signal SPI_MOSI_valid : Std_logic := '0'; -- Data Valid Pulse with TX_data
 	Signal SPI_MOSI_Ready : Std_logic := '0'; -- Transmit Ready for next byte
 
@@ -148,6 +149,7 @@ Begin
 					If count > 5 Then
 						count <= 0;
 						spi_state <= RISING;
+						SPI_Miso_latched <= SPI_Miso;
 					End If;
 					-- RISING EDGE
 					When RISING =>
@@ -166,6 +168,7 @@ Begin
 					If count = CLKS_PER_HALF_BIT Then
 						--SPI_CLK <= not w_CPOL;
 						count <= 0;
+						SPI_Miso_latched <= SPI_Miso;
 						spi_state <= RISING;
 					End If;
 					When POSTDATA =>
@@ -199,7 +202,7 @@ Begin
 			rst => rst,
 			din_ready => SPI_MISO_ready,
 			din_valid => SPI_MISO_valid,
-			din_data => SPI_MISO,
+			din_data => SPI_Miso_latched,
 			dout_ready => RX_Ready,
 			dout_valid => RX_valid,
 			dout_data => RX_data

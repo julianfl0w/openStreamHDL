@@ -6,6 +6,12 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
 set_property CONFIG_MODE SPIx4 [current_design]
 
+set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets SPI_CS_N]
+set_false_path -from [get_cells -hierarchical -filter {NAME =~ soft_rst*}]
+set_false_path -from [get_cells -hierarchical -filter {NAME =~ *_rst_*}]
+#set_output_delay 3 -clock SPI_SCLK_pin [get_ports SPI_MISO]
+set_max_delay 4 -from [get_cells -hierarchical -filter {NAME =~ SPI_MISO*}]
+
 # 12 MHz Clock Signal
 set_property -dict {PACKAGE_PIN L17 IOSTANDARD LVCMOS33} [get_ports sysclk]
 create_clock -period 83.330 -name sys_clk_pin -waveform {0.000 41.660} -add [get_ports sysclk]
@@ -79,6 +85,7 @@ set_property PULLDOWN true [get_ports rstin]
 set_property -dict {PACKAGE_PIN R3 IOSTANDARD LVCMOS33} [get_ports irqueue_out_valid]; #IO_L2P_T0_34 Sch=pio[26]
 #set_property -dict { PACKAGE_PIN T3    IOSTANDARD LVCMOS33 } [get_ports { pio27 }]; #IO_L2N_T0_34 Sch=pio[27]
 set_property -dict {PACKAGE_PIN T3 IOSTANDARD LVCMOS33 DRIVE 8} [get_ports SPI_MISO]; #IO_L2N_T0_34 Sch=pio[27]
+
 #set_property -dict { PACKAGE_PIN R2    IOSTANDARD LVCMOS33 } [get_ports { pio28 }]; #IO_L1P_T0_34 Sch=pio[28]
 set_property -dict { PACKAGE_PIN R2    IOSTANDARD LVCMOS33 } [get_ports audio_out_valid]; #IO_L1P_T0_34 Sch=pio[28]
 #set_property -dict { PACKAGE_PIN T1    IOSTANDARD LVCMOS33 } [get_ports { pio29 }]; #IO_L3P_T0_DQS_34 Sch=pio[29]

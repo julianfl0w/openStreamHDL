@@ -69,7 +69,7 @@ set_property -dict {PACKAGE_PIN H1 IOSTANDARD LVCMOS33} [get_ports halt];
 #set_property -dict { PACKAGE_PIN M1    IOSTANDARD LVCMOS33 } [get_ports { pio17 }]; #IO_L9N_T1_DQS_AD7N_35 Sch=pio[17]
 #set_property -dict { PACKAGE_PIN N3    IOSTANDARD LVCMOS33 } [get_ports { pio18 }]; #IO_L12P_T1_MRCC_35 Sch=pio[18]
 set_property -dict {PACKAGE_PIN N3 IOSTANDARD LVCMOS33} [get_ports SPI_SCLK]; #IO_L12P_T1_MRCC_35 Sch=pio[18]
-create_clock -period 10 -name SPI_SCLK_pin -waveform {0.000 5.0} -add [get_ports SPI_SCLK]
+create_clock -period 5 -name SPI_SCLK_pin -waveform {0.000 2.5} -add [get_ports SPI_SCLK]
 set_clock_groups -name exclusive_clk0_clk1 -physically_exclusive -group SPI_SCLK_pin -group sys_clk_pin
 set_clock_groups -name exclusive_clk0_clk12 -physically_exclusive -group [get_clocks -include_generated_clocks SPI_SCLK_pin ] -group [get_clocks -include_generated_clocks sys_clk_pin ] 
 

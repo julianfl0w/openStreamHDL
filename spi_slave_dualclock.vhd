@@ -1,6 +1,8 @@
 Library IEEE;
 Use IEEE.STD_LOGIC_1164.All;
 Use IEEE.NUMERIC_STD.All;
+Library UNISIM;
+use UNISIM.vcomponents.all;
 
 -- Julian Loiacono
 
@@ -10,6 +12,9 @@ Entity spi_slave_dualclock Is
 		RST : In Std_logic; -- SPI clock
 		-- SPI SLAVE INTERFACE
 		SCLK : In Std_logic; -- SPI clock
+		SCLK_hold : In Std_logic; 
+		-- ^^ Switches MISO data on rising edge ^^
+		--  Easiest option : Set to SCLK_NOT. Otherwise, SCLK delayed by a ns or 2
 		CS_N : In Std_logic; -- SPI chip select, active in low
 		MOSI : In Std_logic_vector(0 Downto 0); -- SPI serial data from master to slave
 		MISO : Out Std_logic_vector(0 Downto 0); -- SPI serial data from slave to master
@@ -37,7 +42,7 @@ Architecture RTL Of spi_slave_dualclock Is
 	Signal TXFIFO_DATA : Std_logic_vector(TX_DATA'high Downto 0); -- input data for SPI master
 	Signal TXFIFO_VALID : Std_logic; -- when TX_VALID = 1, input data are valid
 	Signal TXFIFO_READY : Std_logic; -- when TX_READY = 1, valid input data are accept
-	Signal TX_Enable_LATCHED : Std_logic;
+	Signal TX_Enable_LATCHED : Std_logic := '0';
 
 	Signal MISO_READY_and_enable : Std_logic;
 
@@ -45,11 +50,10 @@ Architecture RTL Of spi_slave_dualclock Is
 	Signal RXFIFO_VALID : Std_logic; -- when RX_VALID = 1, output data are valid
 	Signal RXFIFO_READY : Std_logic;
 	Signal rst_or_deselected : Std_logic;
-
-	Signal sclk_not : Std_logic;
-
+    Signal sclk_not : Std_logic;
+    
 Begin
-	sclk_not <= Not sclk;
+    sclk_not <= not sclk;
 	MOSI_VALID <= Not CS_N;
 	MISO_Ready <= Not CS_N;
 	rst_or_deselected <= rst Or CS_N;
@@ -64,15 +68,7 @@ Begin
 			TX_Enable_LATCHED <= TX_Enable;
 		End If;
 	End Process;
-	
-	miso_process :
-	Process (sclk)
-	Begin
-		If falling_edge(sclk) Then
-           --MISO <= MISO_int;
-		End If;
-	End Process;
-	
+		
 	-- transmit
 	fs_tx : Entity work.fifo_stream_36_dual
 		Generic Map(
@@ -80,7 +76,7 @@ Begin
 		)
 		Port Map(
 			inclk => clk,
-			outclk => sclk_not,
+			outclk => sclk_hold,
 			rst => rst,
 			din_ready => TX_ready,
 			din_valid => TX_valid,
@@ -92,7 +88,7 @@ Begin
 
 	ser : Entity work.serializer
 		Port Map(
-			clk => sclk_not,
+			clk => sclk_hold,
 			rst => rst,
 			din_ready => TXFIFO_ready,
 			din_valid => TXFIFO_valid,
@@ -120,7 +116,7 @@ Begin
 			ALMOST_FULL_OFFSET => x"00FF"
 		)
 		Port Map(
-			inclk => sclk_not,
+			inclk => sclk_not, -- counterintuitive, but we need to use the final falling edge to send to FIFO
 			outclk => clk,
 			rst => rst,
 			din_ready => RXFIFO_ready,
@@ -130,5 +126,6 @@ Begin
 			dout_valid => RX_valid,
 			dout_data => RX_data
 		);
-
+		
+		
 End RTL;

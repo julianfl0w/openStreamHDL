@@ -35,6 +35,7 @@ Architecture arch_imp Of chaser Is
 	Signal Z01_difference: sfixed(1 downto -Z00_target'length+2);
 	Signal Z01_ADDR     : Std_logic_vector(Z00_addr'length   - 1 Downto 0);
 	Signal Z01_target   : sfixed(1 downto -Z00_target'length+2);
+	Signal Z02_target   : sfixed(1 downto -Z00_target'length+2);
 	Signal Z02_ADDR     : Std_logic_vector(Z00_addr'length   - 1 Downto 0);
 	Signal Z03_ADDR     : Std_logic_vector(Z00_addr'length   - 1 Downto 0);
 	Signal Z02_exp : Std_logic;
@@ -75,13 +76,18 @@ Begin
                     else
                         Z02_moving <= '1';
                     end if;
+                    Z02_target <= Z01_target;
                 End If;
                 
                 If srun(Z02) = '1' Then
                     Z03_ADDR       <= Z02_ADDR;         
                     if Z02_en = '1' then      
                         if Z02_exp = '1' then
-                           Z03_current_int<= resize(Z02_current + Z02_modexp, Z03_current_int, fixed_wrap, fixed_truncate);
+                           if Z02_modexp = 0 then
+                                Z03_current_int<= resize(Z02_target, Z03_current_int, fixed_wrap, fixed_truncate);
+                           else
+                                Z03_current_int<= resize(Z02_current + Z02_modexp, Z03_current_int, fixed_wrap, fixed_truncate);
+                           end if;
                         else
                     	   Z03_current_int<= resize(Z02_current + Z02_mod, Z03_current_int, fixed_wrap, fixed_truncate);
                     	end if;

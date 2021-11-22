@@ -34,7 +34,7 @@ Entity mm_volume Is
 		gain_wr : In Std_logic := '1';
 		mm_voiceno : In Std_logic_vector;
 		mm_wrdata_processbw : In Std_logic_vector;
-		Z00_NoteIndex : In Std_logic_vector;
+		Z00_VoiceIndex : In Std_logic_vector;
 
 		Z02_din_data : In sfixed;
 		Z03_dout_data : Out sfixed := (Others => '0')
@@ -57,7 +57,7 @@ Begin
 			wrdata => mm_wrdata_processbw,
 			wren => gain_wr,
 			rden => run(Z00),
-			rdaddr => Z00_NoteIndex,
+			rdaddr => Z00_VoiceIndex,
 			rddata => Z01_gain
 		);
 	sineproc :

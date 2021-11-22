@@ -53,6 +53,19 @@ Begin
 
     clk <= not clk after 10ns;
     
+	sflow_i : Entity work.flow
+		Port Map(
+			clk => clk,
+			rst => rst,
+
+			in_ready  => open,
+			in_valid  => '1',
+			out_ready => '1',
+			out_valid => open,
+
+			run => srun
+		);
+		
     dut : Entity work.chaser_mm
         Generic Map(
             COUNT     => 1,
@@ -105,8 +118,16 @@ exp_wr <= '0';
 wait until Z03_finished = '1';
 
 mm_wrdata <= std_logic_vector(to_unsigned(0, mm_wrdata'length));
+porta_wr <= '1'; wait until rising_edge(clk); 
+porta_wr <= '0'; 
+
+mm_wrdata <= std_logic_vector(to_unsigned(0, mm_wrdata'length));
 target_wr <= '1'; wait until rising_edge(clk); 
 target_wr <= '0'; 
+
+--mm_wrdata <= std_logic_vector(to_unsigned(2**16, mm_wrdata'length));
+--porta_wr <= '1'; wait until rising_edge(clk); 
+--porta_wr <= '0'; 
 
 wait;
 end process;

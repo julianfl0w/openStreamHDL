@@ -124,8 +124,8 @@ Begin
 			wraddr => Z02_voiceaddr,
 			wrdata => Z03_moving,
 			wren => srun(Z02),
-			rden => srun(Z01),
-			rdaddr => Z01_voiceaddr,
+			rden => srun(Z02),
+			rdaddr => Z02_voiceaddr,
 			rddata => Z03_moving_last
 		);
 

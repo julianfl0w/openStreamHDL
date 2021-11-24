@@ -48,7 +48,7 @@ Architecture arch_imp Of chaser_mm_tb Is
         
 Begin
     mm_wrdata_rate   <= mm_wrdata(mm_wrdata_rate  'high downto 0);
-    mm_wrdata_phase     <= mm_wrdata(mm_wrdata_phase    'high downto 0);
+    mm_wrdata_phase  <= mm_wrdata(mm_wrdata_phase 'high downto 0);
     mm_wrdata_ratebw <= mm_wrdata(mm_wrdata_ratebw'high downto 0);
 
     clk <= not clk after 10ns;

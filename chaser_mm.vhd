@@ -41,8 +41,8 @@ Architecture arch_imp Of chaser_mm Is
 	Signal mm_wrdata_processbw : Std_logic_vector(mm_wrdata'length - 1 Downto 0) := (Others => '0');
 	Signal selectionBit : Std_logic := '0';
 
-	Signal Z03_moving : Std_logic_vector(0 Downto 0) := "0";
-	Signal Z03_moving_last : Std_logic_vector(0 Downto 0) := "0";
+	Signal Z04_moving : Std_logic_vector(0 Downto 0) := "0";
+	Signal Z04_moving_last : Std_logic_vector(0 Downto 0) := "0";
 	Signal Z01_target : Std_logic_vector(mm_wrdata'length - 1 Downto 0);
 	Signal Z01_current_int : Std_logic_vector(mm_wrdata'length - 1 Downto 0) := (Others => '0');
 	Signal Z01_rate : Std_logic_vector(mm_wrdata_rate'length - 1 Downto 0);
@@ -60,6 +60,11 @@ Architecture arch_imp Of chaser_mm Is
 Begin
 	Z01_srun <= srun(srun'high Downto Z01);
 	Z04_current_slv <= Std_logic_vector(Z04_current);
+	
+	
+    -- if the thing stopped moving, report it finished
+    Z04_finished <= '1' when Z04_moving(0) = '0' And Z04_moving_last(0) = '1' else '0';
+    
 	sumproc2 :
 	Process (clk)
 	Begin
@@ -78,13 +83,8 @@ Begin
 					Z03_voiceaddr <= Z02_voiceaddr;
 				End If;
 
-				Z04_finished <= '0';
 				If srun(Z03) = '1' Then
 					Z04_voiceaddr <= Z03_voiceaddr;
-					-- if the thing stopped moving, report it finished
-					If Z03_moving(0) = '0' And Z03_moving_last(0) = '1' Then
-						Z04_finished <= '1';
-					End If;
 				End If;
 
 			End If;
@@ -121,12 +121,12 @@ Begin
 		Port Map(
 			clk => clk,
 			wea => '1',
-			wraddr => Z02_voiceaddr,
-			wrdata => Z03_moving,
-			wren => srun(Z02),
-			rden => srun(Z02),
-			rdaddr => Z02_voiceaddr,
-			rddata => Z03_moving_last
+			wraddr => Z04_voiceaddr,
+			wrdata => Z04_moving,
+			wren => srun(Z04),
+			rden => srun(Z03),
+			rdaddr => Z03_voiceaddr,
+			rddata => Z04_moving_last
 		);
 
 	rate : Entity work.simple_dual_one_clock
@@ -166,7 +166,7 @@ Begin
 			Z00_current => Z01_current_int,
 			Z00_voiceaddr => Z01_voiceaddr,
 			Z01_rate => Z02_rate,
-			Z03_moving => Z03_moving(0),
+			Z03_moving => Z04_moving(0),
 			Z03_current => Z04_current
 		);
 

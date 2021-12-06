@@ -41,8 +41,6 @@ Architecture arch_imp Of chaser_mm Is
 	Signal mm_wrdata_processbw : Std_logic_vector(mm_wrdata'length - 1 Downto 0) := (Others => '0');
 	Signal selectionBit : Std_logic := '0';
 
-	Signal Z04_moving : Std_logic_vector(0 Downto 0) := "0";
-	Signal Z04_moving_last : Std_logic_vector(0 Downto 0) := "0";
 	Signal Z01_target : Std_logic_vector(mm_wrdata'length - 1 Downto 0);
 	Signal Z01_current_int : Std_logic_vector(mm_wrdata'length - 1 Downto 0) := (Others => '0');
 	Signal Z01_rate : Std_logic_vector(mm_wrdata_rate'length - 1 Downto 0);
@@ -62,9 +60,6 @@ Begin
 	Z04_current_slv <= Std_logic_vector(Z04_current);
 	
 	
-    -- if the thing stopped moving, report it finished
-    Z04_finished <= '1' when Z04_moving(0) = '0' And Z04_moving_last(0) = '1' else '0';
-    
 	sumproc2 :
 	Process (clk)
 	Begin
@@ -117,17 +112,6 @@ Begin
 			rddata => Z01_current_int
 		);
 
-	moving : Entity work.simple_dual_one_clock
-		Port Map(
-			clk => clk,
-			wea => '1',
-			wraddr => Z04_voiceaddr,
-			wrdata => Z04_moving,
-			wren => srun(Z04),
-			rden => srun(Z03),
-			rdaddr => Z03_voiceaddr,
-			rddata => Z04_moving_last
-		);
 
 	rate : Entity work.simple_dual_one_clock
 		Port Map(
@@ -166,7 +150,7 @@ Begin
 			Z00_current => Z01_current_int,
 			Z00_voiceaddr => Z01_voiceaddr,
 			Z01_rate => Z02_rate,
-			Z03_moving => Z04_moving(0),
+			Z03_finished => Z04_finished,
 			Z03_current => Z04_current
 		);
 

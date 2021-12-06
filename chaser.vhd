@@ -16,11 +16,11 @@ Entity chaser Is
 		Z02_en  : In Std_logic;
 		srun: in Std_logic_vector;
         
+		Z03_finished  : Out Std_logic;
         Z00_target  : In Std_logic_vector;
 		Z00_current : In Std_logic_vector; 
         Z00_voiceaddr    : In Std_logic_vector;
         Z01_rate    : In sfixed;
-        Z03_moving  : out Std_logic;
 		Z03_current : Out sfixed
 	);
 End chaser;
@@ -30,7 +30,8 @@ Architecture arch_imp Of chaser Is
 	Signal Z01_current  :  sfixed(1 downto -Z00_target'length+2);
 	Signal Z02_current  :  sfixed(1 downto -Z00_target'length+2);
 	Signal Z02_linear_mod  :  sfixed(1 downto -Z01_rate'length+2);
-	Signal Z02_scaled_difference  :  sfixed(1 downto -Z00_target'length+2);
+	Signal Z02_rate        :  sfixed(1 downto -Z01_rate'length+2);
+	Signal Z02_scaled_difference  :  sfixed(1 downto -Z01_rate'length-Z00_target'length+2); -- needs to be total bw of sum
 	Signal Z03_current_int  : sfixed(1 downto -Z00_target'length+2)  := (Others => '0');
 	Signal Z01_difference: sfixed(1 downto -Z00_target'length+2);
 	Signal Z02_difference: sfixed(1 downto -Z00_target'length+2);
@@ -40,9 +41,28 @@ Architecture arch_imp Of chaser Is
 	Signal Z02_voiceaddr     : Std_logic_vector(Z00_voiceaddr'length   - 1 Downto 0);
 	Signal Z03_voiceaddr     : Std_logic_vector(Z00_voiceaddr'length   - 1 Downto 0);
 	Signal Z02_is_exponential : Std_logic;
+	Signal Z03_moving  : Std_logic_vector(0 downto 0) := "0";
+	Signal Z02_moving_last  : Std_logic_vector(0 downto 0) := "0";
+	Signal Z03_moving_last  : Std_logic_vector(0 downto 0) := "0";
 
 		
-Begin
+Begin 
+
+    -- if the thing stopped moving, report it finished
+    Z03_finished <= '1' when Z03_moving(0) = '0' And Z03_moving_last(0) = '1' else '0';
+    
+	moving : Entity work.simple_dual_one_clock
+		Port Map(
+			clk => clk,
+			wea => '1',
+			wraddr => Z03_voiceaddr,
+			wrdata => Z03_moving,
+			wren => srun(Z03),
+			rden => srun(Z01),
+			rdaddr => Z01_voiceaddr,
+			rddata => Z02_moving_last
+		);
+
     Z03_current       <= Z03_current_int;
 	-- sum process\\
 	sumproc2 :
@@ -77,6 +97,7 @@ Begin
                     
                     Z02_target <= Z01_target;
                     Z02_difference <= Z01_difference;
+                    Z02_rate <= Z01_rate;
                 End If;
                 
                 If srun(Z02) = '1' Then
@@ -87,11 +108,25 @@ Begin
                         -- Linear or Exponential chase
                         -- if exponential
                         if Z02_is_exponential = '1' then
-                           if abs(Z02_scaled_difference) < 0.0001 then
-                                Z03_moving <= '0';
-                                Z03_current_int<= resize(Z02_target, Z03_current_int, fixed_wrap, fixed_truncate);
+                           Z03_moving(0) <= '1';
+                           
+                           -- if the difference is yea small, declare the thing done
+                           if abs(Z02_scaled_difference) < 0.00001 then
+                                Z03_moving(0) <= '0';
+                                if Z02_rate /= 0 then
+                                    Z03_current_int<= resize(Z02_target, Z03_current_int, fixed_wrap, fixed_truncate);
+                                end if;
+                           
+                           -- if it is simply too small to add, increase by 1 until finished
+                           elsif abs(Z02_scaled_difference) < to_sfixed(2.0**(-Z02_current'length + 1), Z02_scaled_difference) then
+                                if Z02_scaled_difference > 0 then 
+                                    Z03_current_int <= Z03_current_int + to_sfixed(2.0**(-Z03_current_int'length + 1), Z03_current_int);
+                                else
+                                    Z03_current_int <= Z03_current_int - to_sfixed(2.0**(-Z03_current_int'length + 1), Z03_current_int);
+                                end if;
+                                
+                           -- normal case: add the difference
                            else
-                                Z03_moving <= '1';
                                 Z03_current_int<= resize(Z02_current + Z02_scaled_difference, Z03_current_int, fixed_wrap, fixed_truncate);
                            end if;
                            
@@ -101,15 +136,17 @@ Begin
                     	   
                             -- 2 of the same indicates stop state
                             if abs(Z02_difference) = 0  then
-                                Z03_moving <= '0';
+                                Z03_moving(0) <= '0';
                             else
-                                Z03_moving <= '1';
+                                Z03_moving(0) <= '1';
                             end if;
                     	end if;
                     	
                     else
                     	Z03_current_int<= Z02_current;
+                        Z03_moving <= Z02_moving_last;
                     end if;
+                    Z03_moving_last <= Z02_moving_last;
                 End If;
                 
             End If;

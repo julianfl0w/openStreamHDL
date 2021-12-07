@@ -82,8 +82,8 @@ Begin
                 If srun(Z01) = '1' Then
                     Z02_voiceaddr <= Z01_voiceaddr;
                     Z02_current   <= Z01_current;
-                    Z02_is_exponential   <= Z01_is_exponential;
-                    Z02_scaled_difference  <= resize(Z01_difference * Z01_rate, Z02_scaled_difference, fixed_wrap, fixed_truncate);
+                    Z02_is_exponential   <= '0';
+                    --Z02_scaled_difference  <= resize(Z01_difference * Z01_rate, Z02_scaled_difference, fixed_wrap, fixed_truncate);
                     
                     -- Linear Mode:
                     -- chase the prescale
@@ -91,7 +91,7 @@ Begin
                         Z02_linear_mod <= Z01_rate;
                     Elsif Z01_difference < -Z01_rate Then
                         Z02_linear_mod <= resize(-Z01_rate, Z02_linear_mod, fixed_wrap, fixed_truncate);
-                    Else
+                    Else -- finished!
                    	    Z02_linear_mod <= resize(Z01_difference, Z02_linear_mod, fixed_wrap, fixed_truncate);
                     End If;
                     
@@ -105,42 +105,14 @@ Begin
                     
                     -- Enable on certain clock cycles, good for LFOs     
                     if Z02_en = '1' then      
-                        -- Linear or Exponential chase
-                        -- if exponential
-                        if Z02_is_exponential = '1' then
-                           Z03_moving(0) <= '1';
-                           
-                           -- if the difference is yea small, declare the thing done
-                           if abs(Z02_scaled_difference) < 0.00001 then
-                                Z03_moving(0) <= '0';
-                                if Z02_rate /= 0 then
-                                    Z03_current_int<= resize(Z02_target, Z03_current_int, fixed_wrap, fixed_truncate);
-                                end if;
-                           
-                           -- if it is simply too small to add, increase by 1 until finished
-                           elsif abs(Z02_scaled_difference) < to_sfixed(2.0**(-Z02_current'length + 1), Z02_scaled_difference) then
-                                if Z02_scaled_difference > 0 then 
-                                    Z03_current_int <= Z03_current_int + to_sfixed(2.0**(-Z03_current_int'length + 1), Z03_current_int);
-                                else
-                                    Z03_current_int <= Z03_current_int - to_sfixed(2.0**(-Z03_current_int'length + 1), Z03_current_int);
-                                end if;
-                                
-                           -- normal case: add the difference
-                           else
-                                Z03_current_int<= resize(Z02_current + Z02_scaled_difference, Z03_current_int, fixed_wrap, fixed_truncate);
-                           end if;
-                           
-                        -- if linear
+                        Z03_current_int<= resize(Z02_current + Z02_linear_mod, Z03_current_int, fixed_wrap, fixed_truncate);
+                       
+                        -- 2 of the same indicates stop state
+                        if abs(Z02_difference) = 0  then
+                            Z03_moving(0) <= '0';
                         else
-                    	    Z03_current_int<= resize(Z02_current + Z02_linear_mod, Z03_current_int, fixed_wrap, fixed_truncate);
-                    	   
-                            -- 2 of the same indicates stop state
-                            if abs(Z02_difference) = 0  then
-                                Z03_moving(0) <= '0';
-                            else
-                                Z03_moving(0) <= '1';
-                            end if;
-                    	end if;
+                            Z03_moving(0) <= '1';
+                        end if;
                     	
                     else
                     	Z03_current_int<= Z02_current;

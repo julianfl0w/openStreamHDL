@@ -123,7 +123,7 @@ exp_or_linear_wr <= '1'; wait until rising_edge(clk); exp_or_linear_wr <= '0';
 mm_wrdata <= std_logic_vector(to_unsigned(2**30, mm_wrdata'length));
 target_wr <= '1'; wait until rising_edge(clk); target_wr <= '0'; 
 
-mm_wrdata <= std_logic_vector(to_unsigned(integer(2**16 * (2.0**(-14))), mm_wrdata'length));
+mm_wrdata <= std_logic_vector(to_unsigned(integer(2**16 * (2.0**(-10))), mm_wrdata'length));
 rate_wr <= '1'; wait until rising_edge(clk); rate_wr <= '0'; 
 
 wait until Z04_finished = '1'; 

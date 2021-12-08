@@ -100,7 +100,7 @@ Begin
 			rddata => Z01_target
 		);
 
-	smoothed : Entity work.simple_dual_one_clock
+	smoothed_wraparound : Entity work.simple_dual_one_clock
 		Port Map(
 			clk => clk,
 			wea => '1',

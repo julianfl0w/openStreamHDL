@@ -12,7 +12,6 @@ Entity chaser Is
 	Port (
 		clk : In Std_logic;
 		rst : In Std_logic;
-		Z01_is_exponential : In Std_logic;
 		Z02_en  : In Std_logic;
 		srun: in Std_logic_vector;
         

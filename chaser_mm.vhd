@@ -22,7 +22,6 @@ Entity chaser_mm Is
 
 		target_wr : In Std_logic;
 		rate_wr : In Std_logic;
-		exp_or_linear_wr : In Std_logic;
 		mm_voiceaddr : In Std_logic_vector;
 		mm_wrdata : In Std_logic_vector;
 		mm_wrdata_rate : In Std_logic_vector;
@@ -47,8 +46,6 @@ Architecture arch_imp Of chaser_mm Is
 	Signal Z02_rate : sfixed(1 Downto -mm_wrdata_rate'length + 2);
 	Signal Z04_current : sfixed(1 Downto -mm_wrdata'length + 2);
 	Signal Z04_current_slv : Std_logic_vector(mm_wrdata'high Downto 0);
-
-	Signal Z02_is_exponential : Std_logic_vector(0 Downto 0) := b"1";
 
 	Signal Z01_voiceaddr : Std_logic_vector(Z00_voiceaddr'high Downto 0); -- should be 1 before data
 	Signal Z02_voiceaddr : Std_logic_vector(Z00_voiceaddr'high Downto 0); -- should be 1 before data
@@ -124,18 +121,7 @@ Begin
 			rdaddr => Z00_voiceaddr,
 			rddata => Z01_rate
 		);
-	-- sets exponent mode
-	exp : Entity work.simple_dual_one_clock
-		Port Map(
-			clk => clk,
-			wea => '1',
-			wraddr => mm_voiceaddr,
-			wrdata => mm_wrdata(0 Downto 0),
-			wren => exp_or_linear_wr,
-			rden => srun(Z01),
-			rdaddr => Z01_voiceaddr,
-			rddata => Z02_is_exponential
-		);
+		
 	chaser_i : Entity work.chaser
 		--        Generic Map(
 		--        )
@@ -144,7 +130,6 @@ Begin
 			rst => rst,
 			srun => Z01_srun,
 			Z02_en => Z03_en,
-			Z01_is_exponential => Z02_is_exponential(0),
 
 			Z00_target => Z01_target,
 			Z00_current => Z01_current_int,

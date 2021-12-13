@@ -70,10 +70,10 @@ signal bclk_counter       : integer := 0;
 signal i2s_bclk_int       : std_logic := '0';
 signal TX_READY_int       : STD_LOGIC;
 
-attribute mark_debug of i2s_bclk_int : signal is "true";
-attribute mark_debug of TX_DATA  : signal is "true";
-attribute mark_debug of TX_READY : signal is "true";
-attribute mark_debug of TX_VALID : signal is "true";
+--attribute mark_debug of i2s_bclk_int : signal is "true";
+--attribute mark_debug of TX_DATA  : signal is "true";
+--attribute mark_debug of TX_READY : signal is "true";
+--attribute mark_debug of TX_VALID : signal is "true";
     
 begin
 i2s_bclk  <= i2s_bclk_int;

@@ -48,10 +48,10 @@ signal fifo_FULL    : std_logic := '0';
 signal fifo_RDERR   : std_logic := '0';
 signal fifo_WRERR   : std_logic := '0';
 
-Attribute mark_debug : String;
-Attribute mark_debug Of fifo_FULL    : Signal Is "true";
-Attribute mark_debug Of fifo_RDERR   : Signal Is "true";
-Attribute mark_debug Of fifo_WRERR   : Signal Is "true";
+--Attribute mark_debug : String;
+--Attribute mark_debug Of fifo_FULL    : Signal Is "true";
+--Attribute mark_debug Of fifo_RDERR   : Signal Is "true";
+--Attribute mark_debug Of fifo_WRERR   : Signal Is "true";
       
 BEGIN
     fifo_wren <= in_initialized and din_valid and din_ready_int;

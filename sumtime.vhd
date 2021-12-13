@@ -8,8 +8,9 @@ Use ieee.math_real.All;
 Library work;
 Use work.zconstants_pkg.All;
 
-Library IEEE_PROPOSED;
-Use IEEE_PROPOSED.FIXED_PKG.All;
+Library ieee_proposed;
+Use ieee_proposed.fixed_pkg.All;
+Use ieee_proposed.fixed_float_types.All;
 
 Entity sumtime Is
 	Generic (

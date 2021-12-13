@@ -54,8 +54,8 @@ Architecture arch_imp Of mm_volume_stream Is
    signal Z01_gain : std_logic_vector(mm_wrdata_processbw'high downto 0);
    signal Z02_gain : sfixed(1 downto -mm_wrdata_processbw'length + 2);
    
-   signal Z01_din_data   : sfixed(Z00_din_data'range);
-   signal Z02_din_data   : sfixed(Z00_din_data'range);
+   signal Z01_din_data   : sfixed(Z00_din_data'high downto Z00_din_data'low);
+   signal Z02_din_data   : sfixed(Z00_din_data'high downto Z00_din_data'low);
         
 
 Begin

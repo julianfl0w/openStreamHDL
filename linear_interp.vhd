@@ -11,8 +11,9 @@ Use UNISIM.vcomponents.All;
 Library UNIMACRO;
 Use UNIMACRO.vcomponents.All;
 
-Library IEEE_PROPOSED;
-Use IEEE_PROPOSED.FIXED_PKG.All;
+Library ieee_proposed;
+Use ieee_proposed.fixed_pkg.All;
+Use ieee_proposed.fixed_float_types.All;
 
 Library work;
 Use work.zconstants_pkg.All;

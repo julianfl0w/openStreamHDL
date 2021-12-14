@@ -18,7 +18,6 @@ Entity chaser_mm Is
 		clk : In Std_logic;
 		rst : In Std_logic;
 		srun : In Std_logic_vector;
-		Z03_en : In Std_logic;
 
 		target_wr : In Std_logic;
 		rate_wr : In Std_logic;
@@ -37,7 +36,6 @@ End chaser_mm;
 Architecture arch_imp Of chaser_mm Is
 
 	Signal Z01_srun : Std_logic_vector(srun'high - Z01 Downto 0);
-	Signal mm_wrdata_processbw : Std_logic_vector(mm_wrdata'length - 1 Downto 0) := (Others => '0');
 	Signal selectionBit : Std_logic := '0';
 
 	Signal Z01_target : Std_logic_vector(mm_wrdata'length - 1 Downto 0);
@@ -129,7 +127,6 @@ Begin
 			clk => clk,
 			rst => rst,
 			srun => Z01_srun,
-			Z02_en => Z03_en,
 
 			Z00_target => Z01_target,
 			Z00_current => Z01_current_int,

@@ -12,7 +12,6 @@ Entity chaser Is
 	Port (
 		clk : In Std_logic;
 		rst : In Std_logic;
-		Z02_en  : In Std_logic;
 		srun: in Std_logic_vector;
         
 		Z03_finished  : Out Std_logic;
@@ -103,20 +102,15 @@ Begin
                     Z03_voiceaddr       <= Z02_voiceaddr;    
                     
                     -- Enable on certain clock cycles, good for LFOs     
-                    if Z02_en = '1' then      
-                        Z03_current_int<= resize(Z02_current + Z02_linear_mod, Z03_current_int, fixed_wrap, fixed_truncate);
-                       
-                        -- 2 of the same indicates stop state
-                        if abs(Z02_difference) = 0  then
-                            Z03_moving(0) <= '0';
-                        else
-                            Z03_moving(0) <= '1';
-                        end if;
-                    	
+                    Z03_current_int<= resize(Z02_current + Z02_linear_mod, Z03_current_int, fixed_wrap, fixed_truncate);
+                   
+                    -- 2 of the same indicates stop state
+                    if abs(Z02_difference) = 0  then
+                        Z03_moving(0) <= '0';
                     else
-                    	Z03_current_int<= Z02_current;
-                        Z03_moving <= Z02_moving_last;
+                        Z03_moving(0) <= '1';
                     end if;
+                    	
                     Z03_moving_last <= Z02_moving_last;
                 End If;
                 

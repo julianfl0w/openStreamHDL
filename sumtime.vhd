@@ -41,9 +41,9 @@ Architecture arch_imp Of sumtime Is
 	Signal currAddend : Integer := ratio - 1;
 
 Begin
-	dout_data <= data_latched;
+	dout_data  <= data_latched;
 	dout_valid <= dout_valid_int;
-	din_ready <= din_ready_int;
+	din_ready  <= din_ready_int;
 	din_ready_int <= '1' When dout_valid_int = '0' Or dout_ready = '1' Else '0';
 
 	ser_process :

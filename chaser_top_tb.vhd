@@ -62,23 +62,23 @@ signal led0_r :  Std_logic := '1';
 		
 -- Calculate the number of clock cycles in minutes/seconds
 function format_command_32(mm_paramno : integer := 0;
-                    mm_voiceaddr        : integer := 0;
+                    mm_addr        : integer := 0;
                     payload        : std_logic_vector
                     ) return std_logic_vector is
 begin
     return std_logic_vector(to_unsigned(mm_paramno, 8)) & 
-        std_logic_vector(to_unsigned(mm_voiceaddr, 24)) &
+        std_logic_vector(to_unsigned(mm_addr, 24)) &
         payload;
 end function;
     
 -- Calculate the number of clock cycles in minutes/seconds
 function format_command_real(mm_paramno  : integer := 0;
-                    mm_voiceaddr : integer := 0;
+                    mm_addr : integer := 0;
                     payload        : real := 0.0
                     ) return std_logic_vector is
 begin
     return std_logic_vector(to_unsigned(mm_paramno, 8)) & 
-        std_logic_vector(to_unsigned(mm_voiceaddr, 24)) &
+        std_logic_vector(to_unsigned(mm_addr, 24)) &
         b"00000000000000" & 
         std_logic_vector(to_sfixed(payload, 1, -18+2));
 end function;
@@ -86,27 +86,27 @@ end function;
 -- to be used with bezier middle and enpoint
 -- (start point is set as current state of envelope)
 function format_command_bezier_MIDnEND(mm_paramno  : integer := 0;
-                    mm_voiceaddr : integer := 0;
+                    mm_addr : integer := 0;
                     midpoint        : real := 0.0;
                     endpoint        : real := 0.0
                     ) return std_logic_vector is
 begin
     return std_logic_vector(to_unsigned(mm_paramno, 8)) & 
-        std_logic_vector(to_unsigned(mm_voiceaddr, 24)) &
+        std_logic_vector(to_unsigned(mm_addr, 24)) &
         b"000000000000" &
         std_logic_vector(to_sfixed(midpoint, 1, -10+2)) & 
         std_logic_vector(to_sfixed(endpoint, 1, -10+2));
 end function;
     
 function format_command_3bezier_targets(mm_paramno  : integer := 0;
-                    mm_voiceaddr : integer := 0;
+                    mm_addr : integer := 0;
                     bt0        : real := 0.0;
                     bt1        : real := 0.0;
                     bt2        : real := 0.0
                     ) return std_logic_vector is
 begin
     return std_logic_vector(to_unsigned(mm_paramno, 8)) & 
-        std_logic_vector(to_unsigned(mm_voiceaddr, 24)) &
+        std_logic_vector(to_unsigned(mm_addr, 24)) &
         b"00" &
         std_logic_vector(to_sfixed(bt0, 1, -10+2)) & 
         std_logic_vector(to_sfixed(bt1, 1, -10+2)) &
@@ -117,14 +117,14 @@ end function;
 -- integer payload 
 function format_command_int(mm_paramno  : integer := 0;
                     mm_operator  : integer := 0;
-                    mm_voiceaddr : integer := 0;
+                    mm_addr : integer := 0;
                     payload        : integer := 0
                     ) return std_logic_vector is
     variable TotalSeconds : integer;
 begin
     return std_logic_vector(to_unsigned(mm_paramno, 8)) & 
            std_logic_vector(to_unsigned(mm_operator, 8)) & 
-           std_logic_vector(to_unsigned(mm_voiceaddr, 16)) &
+           std_logic_vector(to_unsigned(mm_addr, 16)) &
            std_logic_vector(to_unsigned(payload, 32));
 end function;
     

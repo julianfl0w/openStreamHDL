@@ -17,25 +17,25 @@ Entity chaser_mm Is
 	Port (
 		clk : In Std_logic;
 		rst : In Std_logic;
-		srun : In Std_logic_vector;
+		run : In Std_logic_vector;
 
 		target_wr : In Std_logic;
 		rate_wr : In Std_logic;
-		mm_voiceaddr : In Std_logic_vector;
+		mm_addr : In Std_logic_vector;
 		mm_wrdata : In Std_logic_vector;
 		mm_wrdata_rate : In Std_logic_vector;
 
 		Z04_finished : Out Std_logic;
 
 		Z00_rden : In Std_logic; -- should be 1 before data
-		Z00_voiceaddr : In Std_logic_vector; -- should be 1 before data
+		Z00_VoiceIndex : In Std_logic_vector; -- should be 1 before data
 		Z01_current : Out Std_logic_vector := (Others => '0')
 	);
 End chaser_mm;
 
 Architecture arch_imp Of chaser_mm Is
 
-	Signal Z01_srun : Std_logic_vector(srun'high - Z01 Downto 0);
+	Signal Z01_run : Std_logic_vector(run'high - Z01 Downto 0);
 	Signal selectionBit : Std_logic := '0';
 
 	Signal Z01_target : Std_logic_vector(mm_wrdata'length - 1 Downto 0);
@@ -45,13 +45,13 @@ Architecture arch_imp Of chaser_mm Is
 	Signal Z04_current : sfixed(1 Downto -mm_wrdata'length + 2);
 	Signal Z04_current_slv : Std_logic_vector(mm_wrdata'high Downto 0);
 
-	Signal Z01_voiceaddr : Std_logic_vector(Z00_voiceaddr'high Downto 0); -- should be 1 before data
-	Signal Z02_voiceaddr : Std_logic_vector(Z00_voiceaddr'high Downto 0); -- should be 1 before data
-	Signal Z03_voiceaddr : Std_logic_vector(Z00_voiceaddr'high Downto 0); -- should be 1 before data
-	Signal Z04_voiceaddr : Std_logic_vector(Z00_voiceaddr'high Downto 0); -- should be 1 before data
+	Signal Z01_VoiceIndex : Std_logic_vector(Z00_VoiceIndex'high Downto 0); -- should be 1 before data
+	Signal Z02_VoiceIndex : Std_logic_vector(Z00_VoiceIndex'high Downto 0); -- should be 1 before data
+	Signal Z03_VoiceIndex : Std_logic_vector(Z00_VoiceIndex'high Downto 0); -- should be 1 before data
+	Signal Z04_VoiceIndex : Std_logic_vector(Z00_VoiceIndex'high Downto 0); -- should be 1 before data
 
 Begin
-	Z01_srun <= srun(srun'high Downto Z01);
+	Z01_run <= run(run'high Downto Z01);
 	Z04_current_slv <= Std_logic_vector(Z04_current);
 	
 	
@@ -61,20 +61,20 @@ Begin
 		If rising_edge(clk) Then
 			If rst = '0' Then
 
-				If srun(Z00) = '1' Then
-					Z01_voiceaddr <= Z00_voiceaddr;
+				If run(Z00) = '1' Then
+					Z01_VoiceIndex <= Z00_VoiceIndex;
 				End If;
-				If srun(Z01) = '1' Then
-					Z02_voiceaddr <= Z01_voiceaddr;
+				If run(Z01) = '1' Then
+					Z02_VoiceIndex <= Z01_VoiceIndex;
 					Z02_rate <= sfixed(Z01_rate);
 				End If;
 
-				If srun(Z02) = '1' Then
-					Z03_voiceaddr <= Z02_voiceaddr;
+				If run(Z02) = '1' Then
+					Z03_VoiceIndex <= Z02_VoiceIndex;
 				End If;
 
-				If srun(Z03) = '1' Then
-					Z04_voiceaddr <= Z03_voiceaddr;
+				If run(Z03) = '1' Then
+					Z04_VoiceIndex <= Z03_VoiceIndex;
 				End If;
 
 			End If;
@@ -87,23 +87,23 @@ Begin
 		Port Map(
 			clk => clk,
 			wea => '1',
-			wraddr => mm_voiceaddr,
+			wraddr => mm_addr,
 			wrdata => mm_wrdata,
 			wren => target_wr,
-			rden => srun(Z00),
-			rdaddr => Z00_voiceaddr,
+			rden => run(Z00),
+			rdaddr => Z00_VoiceIndex,
 			rddata => Z01_target
 		);
 
-	smoothed_wraparound : Entity work.simple_dual_one_clock
+	current_wraparound : Entity work.simple_dual_one_clock
 		Port Map(
 			clk => clk,
 			wea => '1',
-			wraddr => Z04_voiceaddr,
+			wraddr => Z04_VoiceIndex,
 			wrdata => Z04_current_slv,
-			wren => srun(Z04),
-			rden => srun(Z00),
-			rdaddr => Z00_voiceaddr,
+			wren => run(Z04),
+			rden => run(Z00),
+			rdaddr => Z00_VoiceIndex,
 			rddata => Z01_current_int
 		);
 
@@ -112,11 +112,11 @@ Begin
 		Port Map(
 			clk => clk,
 			wea => '1',
-			wraddr => mm_voiceaddr,
+			wraddr => mm_addr,
 			wrdata => mm_wrdata_rate,
 			wren => rate_wr,
-			rden => srun(Z00),
-			rdaddr => Z00_voiceaddr,
+			rden => run(Z00),
+			rdaddr => Z00_VoiceIndex,
 			rddata => Z01_rate
 		);
 		
@@ -126,11 +126,11 @@ Begin
 		Port Map(
 			clk => clk,
 			rst => rst,
-			srun => Z01_srun,
+			run => Z01_run,
 
 			Z00_target => Z01_target,
 			Z00_current => Z01_current_int,
-			Z00_voiceaddr => Z01_voiceaddr,
+			Z00_VoiceIndex => Z01_VoiceIndex,
 			Z01_rate => Z02_rate,
 			Z03_finished => Z04_finished,
 			Z03_current => Z04_current

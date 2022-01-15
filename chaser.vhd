@@ -12,12 +12,12 @@ Entity chaser Is
 	Port (
 		clk : In Std_logic;
 		rst : In Std_logic;
-		srun: in Std_logic_vector;
+		run: in Std_logic_vector;
         
 		Z03_finished  : Out Std_logic;
         Z00_target  : In Std_logic_vector;
 		Z00_current : In Std_logic_vector; 
-        Z00_voiceaddr    : In Std_logic_vector;
+        Z00_VoiceIndex    : In Std_logic_vector;
         Z01_rate    : In sfixed;
 		Z03_current : Out sfixed
 	);
@@ -33,11 +33,11 @@ Architecture arch_imp Of chaser Is
 	Signal Z03_current_int  : sfixed(1 downto -Z00_target'length+2)  := (Others => '0');
 	Signal Z01_difference: sfixed(1 downto -Z00_target'length+2);
 	Signal Z02_difference: sfixed(1 downto -Z00_target'length+2);
-	Signal Z01_voiceaddr     : Std_logic_vector(Z00_voiceaddr'length   - 1 Downto 0);
+	Signal Z01_VoiceIndex     : Std_logic_vector(Z00_VoiceIndex'length   - 1 Downto 0);
 	Signal Z01_target   : sfixed(1 downto -Z00_target'length+2);
 	Signal Z02_target   : sfixed(1 downto -Z00_target'length+2);
-	Signal Z02_voiceaddr     : Std_logic_vector(Z00_voiceaddr'length   - 1 Downto 0);
-	Signal Z03_voiceaddr     : Std_logic_vector(Z00_voiceaddr'length   - 1 Downto 0);
+	Signal Z02_VoiceIndex     : Std_logic_vector(Z00_VoiceIndex'length   - 1 Downto 0);
+	Signal Z03_VoiceIndex     : Std_logic_vector(Z00_VoiceIndex'length   - 1 Downto 0);
 	Signal Z02_is_exponential : Std_logic;
 	Signal Z03_moving  : Std_logic_vector(0 downto 0) := "0";
 	Signal Z02_moving_last  : Std_logic_vector(0 downto 0) := "0";
@@ -53,11 +53,11 @@ Begin
 		Port Map(
 			clk => clk,
 			wea => '1',
-			wraddr => Z03_voiceaddr,
+			wraddr => Z03_VoiceIndex,
 			wrdata => Z03_moving,
-			wren => srun(Z03),
-			rden => srun(Z01),
-			rdaddr => Z01_voiceaddr,
+			wren => run(Z03),
+			rden => run(Z01),
+			rdaddr => Z01_VoiceIndex,
 			rddata => Z02_moving_last
 		);
 
@@ -70,15 +70,15 @@ Begin
 
 			If rst = '0' Then
                 
-                If srun(Z00) = '1' Then
+                If run(Z00) = '1' Then
                     Z01_target     <= sfixed(Z00_target);
-                    Z01_voiceaddr  <= Z00_voiceaddr;
+                    Z01_VoiceIndex  <= Z00_VoiceIndex;
                     Z01_current    <= sfixed(Z00_current);
                     Z01_difference <= sfixed(resize(signed(Z00_target) - signed(Z00_current), Z01_difference'length));
                 End If;
 
-                If srun(Z01) = '1' Then
-                    Z02_voiceaddr <= Z01_voiceaddr;
+                If run(Z01) = '1' Then
+                    Z02_VoiceIndex <= Z01_VoiceIndex;
                     Z02_current   <= Z01_current;
                     Z02_is_exponential   <= '0';
                     --Z02_scaled_difference  <= resize(Z01_difference * Z01_rate, Z02_scaled_difference, fixed_wrap, fixed_truncate);
@@ -98,12 +98,16 @@ Begin
                     Z02_rate <= Z01_rate;
                 End If;
                 
-                If srun(Z02) = '1' Then
-                    Z03_voiceaddr       <= Z02_voiceaddr;    
+                If run(Z02) = '1' Then
+                    Z03_VoiceIndex       <= Z02_VoiceIndex;    
                     
-                    -- Enable on certain clock cycles, good for LFOs     
-                    Z03_current_int<= resize(Z02_current + Z02_linear_mod, Z03_current_int, fixed_wrap, fixed_truncate);
-                   
+                    -- jump to 0 when rate is negative
+                    if Z02_rate < 0 then
+                        Z03_current_int<= (others=>'0');
+                    else
+                        Z03_current_int<= resize(Z02_current + Z02_linear_mod, Z03_current_int, fixed_wrap, fixed_truncate);
+                    end if;
+                    
                     -- 2 of the same indicates stop state
                     if abs(Z02_difference) = 0  then
                         Z03_moving(0) <= '0';

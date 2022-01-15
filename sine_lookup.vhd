@@ -35,7 +35,7 @@ End sine_lookup;
 
 Architecture Behavioral Of sine_lookup Is
 
-	Constant LUT_voiceaddrWIDTH : Natural := 7;
+	Constant LUT_VoiceIndexWIDTH : Natural := 7;
 	-- just leave it constant
 	Constant PROCESS_BW : Integer := 18;
 
@@ -45,18 +45,18 @@ Architecture Behavioral Of sine_lookup Is
 	Signal Z06_phase_passthrough : sfixed(Z06_SINE_out'high Downto Z06_SINE_out'low) := (Others => '0');
 
 	Signal Z00_PHASE_QUAD_LOW : signed(1 Downto 0) := (Others => '0');
-	Signal Z00_PHASE_MAIN_LOW : signed(LUT_voiceaddrWIDTH - 1 Downto 0) := (Others => '0');
+	Signal Z00_PHASE_MAIN_LOW : signed(LUT_VoiceIndexWIDTH - 1 Downto 0) := (Others => '0');
 	Signal Z01_PHASE_QUAD_HIGH : signed(1 Downto 0) := (Others => '0');
-	Signal Z01_PHASE_MAIN_HIGH : signed(LUT_voiceaddrWIDTH - 1 Downto 0) := (Others => '0');
+	Signal Z01_PHASE_MAIN_HIGH : signed(LUT_VoiceIndexWIDTH - 1 Downto 0) := (Others => '0');
 	Signal Z01_PHASE_HIGH : signed(Z00_PHASE'length - 1 Downto 0) := (Others => '0');
 	Signal Z01_LOW : sfixed(0 Downto -PROCESS_BW + 1) := (Others => '0');
 	Signal Z02_LOW : sfixed(1 Downto -PROCESS_BW + 2) := (Others => '0');
 	Signal Z03_LOW : sfixed(1 Downto -PROCESS_BW + 2) := (Others => '0');
 	Signal Z02_HIGH : sfixed(0 Downto -PROCESS_BW + 1) := (Others => '0');
 	Signal Z03_HIGH : sfixed(1 Downto -PROCESS_BW + 2) := (Others => '0');
-	Signal Z01_PHASE_RESIDUAL : sfixed(0 Downto -Z00_PHASE'length + LUT_voiceaddrWIDTH + 2) := (Others => '0');
-	Signal Z02_PHASE_RESIDUAL : sfixed(0 Downto -Z00_PHASE'length + LUT_voiceaddrWIDTH + 2) := (Others => '0');
-	Signal Z03_PHASE_RESIDUAL : sfixed(0 Downto -Z00_PHASE'length + LUT_voiceaddrWIDTH + 2) := (Others => '0');
+	Signal Z01_PHASE_RESIDUAL : sfixed(0 Downto -Z00_PHASE'length + LUT_VoiceIndexWIDTH + 2) := (Others => '0');
+	Signal Z02_PHASE_RESIDUAL : sfixed(0 Downto -Z00_PHASE'length + LUT_VoiceIndexWIDTH + 2) := (Others => '0');
+	Signal Z03_PHASE_RESIDUAL : sfixed(0 Downto -Z00_PHASE'length + LUT_VoiceIndexWIDTH + 2) := (Others => '0');
 
 	Signal Z03_run : Std_logic_vector(run'high - Z03 Downto 0);
 
@@ -64,9 +64,9 @@ Begin
 
 	Z03_run <= run(run'high Downto Z03);
 	Z00_PHASE_QUAD_LOW <= Z00_PHASE(Z00_PHASE'length - 1 Downto Z00_PHASE'length - 2);
-	Z00_PHASE_MAIN_LOW <= Z00_PHASE(Z00_PHASE'length - 3 Downto Z00_PHASE'length - LUT_voiceaddrWIDTH - 2);
+	Z00_PHASE_MAIN_LOW <= Z00_PHASE(Z00_PHASE'length - 3 Downto Z00_PHASE'length - LUT_VoiceIndexWIDTH - 2);
 	Z01_PHASE_QUAD_HIGH <= Z01_PHASE_HIGH(Z00_PHASE'length - 1 Downto Z00_PHASE'length - 2);
-	Z01_PHASE_MAIN_HIGH <= Z01_PHASE_HIGH(Z00_PHASE'length - 3 Downto Z00_PHASE'length - LUT_voiceaddrWIDTH - 2);
+	Z01_PHASE_MAIN_HIGH <= Z01_PHASE_HIGH(Z00_PHASE'length - 3 Downto Z00_PHASE'length - LUT_VoiceIndexWIDTH - 2);
 	Z06_SINE_out <= Z06_SINE_out_int When passthrough = '0' Else Z06_phase_passthrough;
 
 	i_linear_interp : Entity work.linear_interp

@@ -26,11 +26,11 @@ Architecture arch_imp Of chaser_mm_tb Is
     signal srun   : Std_logic_vector(6 downto 0) := (others=>'1');
     signal Z03_env_en : Std_logic := '1';
     
-    signal mm_voiceaddr       : Std_logic_vector(LOG2COUNT-1 downto 0) := (others=>'0');
+    signal mm_addr       : Std_logic_vector(LOG2COUNT-1 downto 0) := (others=>'0');
     
     signal Z04_finished : Std_logic;
    
-    signal Z00_voiceaddr     : Std_logic_vector(LOG2COUNT-1 Downto 0) := (others=>'0');
+    signal Z00_VoiceIndex     : Std_logic_vector(LOG2COUNT-1 Downto 0) := (others=>'0');
             
 	Signal Z02_moving : Std_logic_vector(0 Downto 0) := "0";
 	Signal Z02_exp : Std_logic_vector(0 Downto 0) := b"1";
@@ -77,12 +77,12 @@ Begin
             srun=> srun,
             Z03_en => Z03_env_en,
             
-            mm_voiceaddr => mm_voiceaddr,
+            mm_addr => mm_addr,
             mm_wrdata => mm_wrdata,
             mm_wrdata_rate => mm_wrdata_rate,
             
             Z00_rden => srun(Z00),
-            Z00_voiceaddr => Z00_voiceaddr,
+            Z00_VoiceIndex => Z00_VoiceIndex,
             Z01_current => Z01_current,
             Z04_finished => Z04_finished,
             exp_or_linear_wr    => exp_or_linear_wr,
@@ -98,7 +98,7 @@ Begin
             If rising_edge(clk) Then
                 If rst = '0' Then
                     If srun(Z00) = '1' Then
-                        Z00_voiceaddr <= std_logic_vector(unsigned(Z00_voiceaddr) + 1);
+                        Z00_VoiceIndex <= std_logic_vector(unsigned(Z00_VoiceIndex) + 1);
                     End If;
                 End If;
             End If;

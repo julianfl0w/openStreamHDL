@@ -1,5 +1,14 @@
 # openStreamHDL
 
+# Streaming Paradigm:  
+(from https://inst.eecs.berkeley.edu/~cs150/Documents/Interfaces.pdf)  
+  
+![image](https://user-images.githubusercontent.com/8158655/140623267-7ed477c5-1778-45e8-ba8b-48a25d099fc0.png)
+  
+  
+![image](https://user-images.githubusercontent.com/8158655/140623273-62945632-e23e-47b3-8f47-b73cd321168d.png)
+
+# File descriptions
 Here you will find some valuable VHDL code blocks for infrastructure. They are designed to be synthesized for FPGA. A short breakdown of files here:
 | Filename                  | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
@@ -36,14 +45,5 @@ Here you will find some valuable VHDL code blocks for infrastructure. They are d
 | sum8.vhd                  | Sums 8 input channels                                                  |
 | sumtime.vhd               | Sums across time (streaming)                                           |  
   
-# Streaming Paradigm:  
-(from https://inst.eecs.berkeley.edu/~cs150/Documents/Interfaces.pdf)  
-  
-![image](https://user-images.githubusercontent.com/8158655/140623267-7ed477c5-1778-45e8-ba8b-48a25d099fc0.png)
-  
-  
-![image](https://user-images.githubusercontent.com/8158655/140623273-62945632-e23e-47b3-8f47-b73cd321168d.png)
-
-
 # FLOW.VHD  
 This is the most fundamental block in this repository. It implements the above paradigm, creating a step-by-step pipeline of arbitrary length
